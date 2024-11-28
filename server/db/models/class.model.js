@@ -20,7 +20,6 @@ const classSchema = new mongoose.Schema(
     },
     liveVideoLink: {
       type: String,
-      required: true,
     },
     students: [
       {

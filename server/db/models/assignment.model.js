@@ -6,6 +6,10 @@ const assignmentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
     },
+    title: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,

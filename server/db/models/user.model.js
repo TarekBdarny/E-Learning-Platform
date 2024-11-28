@@ -12,13 +12,18 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
-      enum: ["Admin", "User", "Teacher"],
+      enum: ["Admin", "Student", "Teacher"],
+      default: "Student",
     },
     username: {
       type: String,
     },
     email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    userId: {
       type: String,
       required: true,
       unique: true,
@@ -29,18 +34,28 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
+      default: "",
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     courses: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
     ],
-    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     notifications: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Notification" },
     ],
     assignments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Assignment" }],
+
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
+    resetPasswordToken: String,
+    resetPasswordExpiresAt: Date,
   },
   { timestamps: true }
 );
