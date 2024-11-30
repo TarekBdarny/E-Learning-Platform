@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -18,10 +18,16 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
     },
+    providers: [
+      {
+        provider: { type: String, required: true }, // The provider name, e.g., 'google', 'github'
+        providerId: { type: String, required: true }, // The unique provider ID, e.g., 'google-sub-id' or 'github-id'
+      },
+    ],
     email: {
       type: String,
-      required: true,
       unique: true,
+      required: true,
     },
     userId: {
       type: String,
@@ -59,6 +65,19 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// userSchema.methods.generateJWT = function () {
+//   const token = jwt.sign(
+//     {
+//       userId: this._id,
+//       email: this.email,
+//     },
+//     process.env.JWT_SECRET_KEY,
+//     {
+//       expiresIn: "7d",
+//     }
+//   );
+//   return token;
+// };
 
 const userModel = mongoose.model("User", userSchema);
 

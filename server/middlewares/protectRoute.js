@@ -3,7 +3,7 @@ import userModel from "../db/models/user.model.js";
 export const protectRoute = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
-
+    console.log("token", token);
     if (!token) {
       return res
         .status(401)
@@ -12,9 +12,6 @@ export const protectRoute = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    if (!decoded) {
-      return res.status(401).json({ message: "Unauthorized - invalid token" });
-    }
     const user = await userModel.findById(decoded.userId).select("-password");
     if (!user) {
       return res.status(404).json({ message: "user not found" });

@@ -1,0 +1,39 @@
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.use(express.json());
+app.use(cors());
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
+
+// passport configuration
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3001/auth/google/callback",
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // console.log(profile.photos[0].value); // profile picture
+        // console.log(profile.emails[0].value); // email address
+        // console.log(profile.displayName.split(" ")[0]); // first name
+        // console.log(profile.displayName.split(" ")[1]); // last name
+
+        return done(null, profile);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));

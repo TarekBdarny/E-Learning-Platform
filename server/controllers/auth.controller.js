@@ -129,12 +129,17 @@ export const promoteRole = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const user = await userModel.findByIdAndUpdate(userId, {
-      role: "Teacher",
-    });
+    const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    if (user.role === "Teacher") {
+      return res
+        .status(400)
+        .json({ message: "Promotion Denied, You are already a teacher" });
+    }
+    user.role = "Teacher";
+    await user.save();
     res.status(200).json({
       message: "User promoted to Teacher",
       data: {
