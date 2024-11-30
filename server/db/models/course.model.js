@@ -7,6 +7,12 @@ const courseSchema = new mongoose.Schema(
     courseId: { type: String, required: true },
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    pendingRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     assignments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Assignment" }],
   },
   { timestamps: true }

@@ -14,10 +14,7 @@ router.get(
   "/github/callback",
   passport.authenticate("github", { session: false }),
   (req, res) => {
-    console.log("github callbakc : ", req.user);
     generateTokenAndSetCookie(req.user._id, res);
-    // const token = req.user.generateJWT();
-    // res.cookie("jwt", token);
     res.redirect("/profile"); // Replace with your client URL
   }
 );
@@ -26,16 +23,22 @@ router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-
+router.get("/fail", (req, res) => {
+  res.status(401).json({
+    success: false,
+    message: "Failed to authenticate with Google",
+  });
+});
 // Google OAuth Callback Route
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "http://localhost:3001/auth/fail",
+    successRedirect: "/profile",
+  }),
   (req, res) => {
-    console.log("google callbakc : ", req.user);
     generateTokenAndSetCookie(req.user._id, res);
-    // const token = req.user.generateJWT();
-    // res.cookie("jwt", token);
     res.redirect("/profile"); // Replace with your client URL
   }
 );

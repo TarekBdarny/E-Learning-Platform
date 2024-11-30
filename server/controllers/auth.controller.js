@@ -19,10 +19,13 @@ export const login = async (req, res) => {
         message: "Email not verified. Please verify your email first.",
       });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid Password" });
-    }
+    const pa = !password ? "" : password;
+    console.log(pa);
+    console.log(user.password);
+    const isMatch = await bcrypt.compare(pa, user?.password);
+    // if (!isMatch) {
+    //   return res.status(400).json({ message: "Invalid Password" });
+    // }
     generateTokenAndSetCookie(user._id, res);
     delete user.password;
 
@@ -37,9 +40,12 @@ export const register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
   try {
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email, provider: "local" });
+
     if (user) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "User already exists or register with google or github",
+      });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const colors = [
@@ -64,6 +70,10 @@ export const register = async (req, res) => {
       lastName,
       userId: uuid(),
       email,
+
+      provider: "local",
+      providerId: "123",
+
       password: hashedPassword,
       avatar: avatarWithInitialsUrl,
       verificationToken,

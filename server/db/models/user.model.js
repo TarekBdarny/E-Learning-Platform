@@ -18,15 +18,12 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
     },
-    providers: [
-      {
-        provider: { type: String, required: true }, // The provider name, e.g., 'google', 'github'
-        providerId: { type: String, required: true }, // The unique provider ID, e.g., 'google-sub-id' or 'github-id'
-      },
-    ],
+
+    provider: { type: String, required: true }, // The provider name, e.g., 'google', 'github'
+    providerId: { type: String, required: true }, // The unique provider ID, e.g., 'google-sub-id' or 'github-id'
+
     email: {
       type: String,
-      unique: true,
       required: true,
     },
     userId: {
@@ -36,7 +33,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     avatar: {
       type: String,
