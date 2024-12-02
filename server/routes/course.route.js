@@ -1,22 +1,28 @@
 import express from "express";
 import {
-  acceptAllJoinRequests,
-  acceptRequestToJoinCourse,
-  addStudentToCourse,
   createCourse,
-  getAllStudentsInCourse,
   getCourses,
-  requestToJoinCourse,
+  acceptTeacherRequestToJoinCourse,
+  acceptAllTeachersJoinRequests,
+  StudentsRequestsToJoinCourse,
+  getAllStudentsInCourse,
+  getAllTeachersInCourse,
 } from "../controllers/course.controller.js";
 import { protectRoute } from "../middlewares/protectRoute.js";
 const router = express.Router();
 
-router.post("/create", protectRoute, createCourse);
 router.get("/getAll", protectRoute, getCourses);
-router.post("/addStudent/:id", protectRoute, addStudentToCourse);
-router.post("/:id/requestToJoin", protectRoute, requestToJoinCourse);
-router.post("/:id/accept", protectRoute, acceptRequestToJoinCourse);
-router.post("/:id/accept/all", protectRoute, acceptAllJoinRequests);
+router.get("/:id/getAll", protectRoute, getAllTeachersInCourse);
 router.get("/:id/students", protectRoute, getAllStudentsInCourse);
+
+router.post("/create", protectRoute, createCourse);
+router.post(
+  "/:id/acceptTeacher",
+  protectRoute,
+  acceptTeacherRequestToJoinCourse
+);
+router.post("/:id/requestToJoin", protectRoute, StudentsRequestsToJoinCourse);
+router.post("/:id/accept", protectRoute, acceptTeacherRequestToJoinCourse);
+router.post("/:id/accept/all", protectRoute, acceptAllTeachersJoinRequests);
 
 export { router as courseRouter };

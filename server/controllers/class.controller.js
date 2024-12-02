@@ -1,6 +1,76 @@
 import userModel from "../db/models/user.model.js";
 import courseModel from "../db/models/course.model.js";
 import classModel from "../db/models/class.model.js";
+// get methods
+export const getPendingRequestsToJoin = async (req, res) => {
+  const userId = req.user._id; // teacher id
+  const { id: classId } = req.params; //
+
+  try {
+    const teacher = await userModel.findById(userId);
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+    const classObj = await classModel.findById(classId);
+    if (!classObj) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+    if (!classObj.teacher.equals(teacher._id))
+      return res.status(403).json({
+        message: "Unauthorized - You are not the teacher in this class",
+      });
+
+    const pendingRequests = classObj.pendingRequests;
+    return res
+      .status(200)
+      .json({ message: "pending requests", data: pendingRequests });
+  } catch (error) {
+    console.log("error in getPendingRequestsToJoin controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const getAllStudentsInClass = async (req, res) => {
+  const userId = req.user._id; // teacher id
+  const { id: classId } = req.params; //
+
+  try {
+    const teacher = await userModel.findById(userId);
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+    const classObj = await classModel.findOne({
+      _id: classId,
+      teacher: teacher._id,
+    });
+    if (!classObj) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    const students = classObj.students;
+    return res
+      .status(200)
+      .json({ message: "students in class", data: students });
+  } catch (error) {}
+};
+export const getAllMyClasses = async (req, res) => {
+  const userId = req.user._id; // teacher id
+
+  try {
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const classes = await classModel.find({ students: userId });
+    return res.status(200).json({ message: "success", data: classes });
+  } catch (error) {
+    console.log("error in getAllMyClasses controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const getNumberOfStudents = async (req, res) => {};
+
+// post methods
 export const createClass = async (req, res) => {
   const userId = req.user._id;
   const { title, description, startTime, endTime, liveVideoLink } = req.body;
@@ -119,72 +189,7 @@ export const rejectStudentRequest = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-export const getPendingRequestsToJoin = async (req, res) => {
-  const userId = req.user._id; // teacher id
-  const { id: classId } = req.params; //
 
-  try {
-    const teacher = await userModel.findById(userId);
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found" });
-    }
-    const classObj = await classModel.findById(classId);
-    if (!classObj) {
-      return res.status(404).json({ message: "Class not found" });
-    }
-    if (!classObj.teacher.equals(teacher._id))
-      return res.status(403).json({
-        message: "Unauthorized - You are not the teacher in this class",
-      });
-
-    const pendingRequests = classObj.pendingRequests;
-    return res
-      .status(200)
-      .json({ message: "pending requests", data: pendingRequests });
-  } catch (error) {
-    console.log("error in getPendingRequestsToJoin controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-export const getAllStudentsInClass = async (req, res) => {
-  const userId = req.user._id; // teacher id
-  const { id: classId } = req.params; //
-
-  try {
-    const teacher = await userModel.findById(userId);
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found" });
-    }
-    const classObj = await classModel.findOne({
-      _id: classId,
-      teacher: teacher._id,
-    });
-    if (!classObj) {
-      return res.status(404).json({ message: "Class not found" });
-    }
-
-    const students = classObj.students;
-    return res
-      .status(200)
-      .json({ message: "students in class", data: students });
-  } catch (error) {}
-};
-export const getAllMyClasses = async (req, res) => {
-  const userId = req.user._id; // teacher id
-
-  try {
-    const user = await userModel.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const classes = await classModel.find({ students: userId });
-    return res.status(200).json({ message: "success", data: classes });
-  } catch (error) {
-    console.log("error in getAllMyClasses controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 export const inviteStudentToClass = async (req, res) => {
   const userId = req.user._id; // teacher id
   const { id: classId } = req.params; //
@@ -220,7 +225,6 @@ export const inviteStudentToClass = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-export const getNumberOfStudents = async (req, res) => {};
 export const removeStudentFromClass = async (req, res) => {
   const userId = req.user._id; // teacher id
   const { id: classId } = req.params; //

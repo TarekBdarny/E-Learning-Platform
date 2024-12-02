@@ -1,7 +1,77 @@
 import userModel from "../db/models/user.model.js";
 import courseModel from "../db/models/course.model.js";
 import { generateVerificationToken } from "../utils/generateVerificationToken.js";
-//v
+//get
+
+//v when student search for course
+export const getCourses = async (req, res) => {
+  try {
+    const courses = await courseModel.find({}).populate({
+      path: "professor",
+      select: "-password",
+    });
+    res.status(200).json(courses);
+  } catch (error) {
+    console.log("error in getCourses controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const getAllTeachersInCourse = async (req, res) => {
+  const userId = req.user._id; // professor id
+  const { id: courseId } = req.params;
+
+  try {
+    const professor = await userModel.findById(userId);
+    if (!professor)
+      return res.status(404).json({ message: "professor not found" });
+    if (professor.role === "Student" || professor.role === "Teacher")
+      return res
+        .status(403)
+        .json({ message: "Unauthorized - You are not an instructor" });
+
+    const course = await courseModel.findById(courseId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+    const teachers = await userModel
+      .find({ _id: { $in: course.teachers } })
+      .select("-password");
+    return res
+      .status(200)
+      .json({ message: "teacher in the course", data: teachers });
+  } catch (error) {
+    console.log("error in getAllTeachersInCourse controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//TODO:
+//v v
+export const getAllStudentsInCourse = async (req, res) => {
+  const userId = req.user._id; // professor id
+  const { id: courseId } = req.params;
+
+  try {
+    const professor = await userModel.findById(userId);
+    if (!professor)
+      return res.status(404).json({ message: "professor not found" });
+    if (professor.role === "Student" || professor.role === "Teacher")
+      return res
+        .status(403)
+        .json({ message: "Unauthorized - You are not an instructor" });
+
+    const course = await courseModel.findById(courseId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+    const students = await userModel
+      .find({ _id: { $in: course.students } })
+      .select("-password");
+    return res
+      .status(200)
+      .json({ message: "Students in the course", data: students });
+  } catch (error) {
+    console.log("error in getAllStudentsInCourse controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const createCourse = async (req, res) => {
   const { title, description } = req.body;
   const userId = req.user._id;
@@ -30,21 +100,8 @@ export const createCourse = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-//v when student search for course
-export const getCourses = async (req, res) => {
-  try {
-    const courses = await courseModel.find({}).populate({
-      path: "professor",
-      select: "-password",
-    });
-    res.status(200).json(courses);
-  } catch (error) {
-    console.log("error in getCourses controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-//v
+// post
+//v v
 export const acceptTeacherRequestToJoinCourse = async (req, res) => {
   const userId = req.user._id; // professor id
   const { id } = req.params; // course id
@@ -93,7 +150,7 @@ export const acceptTeacherRequestToJoinCourse = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-//v
+//v v
 // add to pending requests
 export const StudentsRequestsToJoinCourse = async (req, res) => {
   const userId = req.user._id; // student id
@@ -126,7 +183,7 @@ export const StudentsRequestsToJoinCourse = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
+// v v
 export const acceptTeachersRequestToJoinCourse = async (req, res) => {
   const userId = req.user._id; // professor id
   const { id: courseId } = req.params; // course id
@@ -180,7 +237,7 @@ export const acceptTeachersRequestToJoinCourse = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-// v
+// v v
 export const acceptAllTeachersJoinRequests = async (req, res) => {
   const userId = req.user._id; // professor id
   const { id: courseId } = req.params; //
@@ -230,58 +287,5 @@ export const acceptAllTeachersJoinRequests = async (req, res) => {
   }
 };
 
-//v
-export const getAllTeachersInCourse = async (req, res) => {
-  const userId = req.user._id; // professor id
-  const { id: courseId } = req.params;
-
-  try {
-    const professor = await userModel.findById(userId);
-    if (!professor)
-      return res.status(404).json({ message: "professor not found" });
-    if (professor.role === "Student" || professor.role === "Teacher")
-      return res
-        .status(403)
-        .json({ message: "Unauthorized - You are not an instructor" });
-
-    const course = await courseModel.findById(courseId);
-    if (!course) return res.status(404).json({ message: "Course not found" });
-    const teachers = await userModel
-      .find({ _id: { $in: course.teachers } })
-      .select("-password");
-    return res
-      .status(200)
-      .json({ message: "teacher in the course", data: teachers });
-  } catch (error) {
-    console.log("error in getAllTeachersInCourse controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-//TODO:
-export const getAllStudentsInCourse = async (req, res) => {
-  const userId = req.user._id; // professor id
-  const { id: courseId } = req.params;
-
-  try {
-    const professor = await userModel.findById(userId);
-    if (!professor)
-      return res.status(404).json({ message: "professor not found" });
-    if (professor.role === "Student" || professor.role === "Teacher")
-      return res
-        .status(403)
-        .json({ message: "Unauthorized - You are not an instructor" });
-
-    const course = await courseModel.findById(courseId);
-    if (!course) return res.status(404).json({ message: "Course not found" });
-    const students = await userModel
-      .find({ _id: { $in: course.students } })
-      .select("-password");
-    return res
-      .status(200)
-      .json({ message: "Students in the course", data: students });
-  } catch (error) {
-    console.log("error in getAllStudentsInCourse controller", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+//v v
+//TODO: reject removeTeacher removeStudent DeleteCourse

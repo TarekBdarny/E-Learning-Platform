@@ -6,7 +6,7 @@ const notificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    recipient: [
+    recipients: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
