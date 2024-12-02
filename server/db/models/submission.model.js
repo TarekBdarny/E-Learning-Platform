@@ -12,11 +12,14 @@ const submissionSchema = new mongoose.Schema(
     },
     fileUrl: {
       type: String,
-      required: true,
+    },
+    text: {
+      type: String,
     },
     grade: {
       type: Number,
-      required: true,
+      min: 0,
+      max: 100,
     },
     feedback: {
       type: String,

@@ -10,9 +10,16 @@ const assignmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    locked: {
+      type: Boolean,
+      default: false,
+    },
     description: {
       type: String,
       required: true,
+    },
+    fileUrl: {
+      type: String,
     },
     deadline: {
       type: Date,
@@ -31,7 +38,6 @@ const assignmentSchema = new mongoose.Schema(
     ],
     hintsUnlockTime: {
       type: Date,
-      required: true,
     },
   },
   { timestamps: true }
