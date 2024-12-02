@@ -5,10 +5,12 @@ const courseSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     professor: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // professor
-    numberOfStudents: {
-      type: Number,
-      default: 0,
-    },
+    students: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     teachers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Students in the whole course
     pendingRequests: [
       {
