@@ -12,12 +12,18 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "Student", "Teacher"],
+      enum: ["Admin", "Professor", "Student", "Teacher"],
       default: "Student",
     },
     username: {
       type: String,
     },
+    pendingRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Class",
+      },
+    ],
 
     provider: { type: String, required: true }, // The provider name, e.g., 'google', 'github'
     providerId: { type: String, required: true }, // The unique provider ID, e.g., 'google-sub-id' or 'github-id'
@@ -47,6 +53,12 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
+      },
+    ],
+    classes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Class",
       },
     ],
     notifications: [

@@ -2,14 +2,15 @@ import mongoose from "mongoose";
 
 const classSchema = new mongoose.Schema(
   {
-    course: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+    title: {
+      type: String,
+      required: true,
     },
-    teacher: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    description: {
+      type: String,
+      required: true,
     },
+
     startTime: {
       type: Date,
       required: true,
@@ -21,6 +22,20 @@ const classSchema = new mongoose.Schema(
     liveVideoLink: {
       type: String,
     },
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+    teacher: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    pendingRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -31,6 +46,12 @@ const classSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message",
+      },
+    ],
+    assignments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Assignment",
       },
     ],
   },

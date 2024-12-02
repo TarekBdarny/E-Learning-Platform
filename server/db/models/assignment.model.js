@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const assignmentSchema = new mongoose.Schema(
   {
-    course: {
+    class: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+      ref: "Class",
     },
     title: {
       type: String,
@@ -18,15 +18,20 @@ const assignmentSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    submission: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Submission",
-    },
-    hint: {
-      type: String,
-    },
-    hintUnlockTime: {
+    submissions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission",
+      },
+    ],
+    hints: [
+      {
+        type: String,
+      },
+    ],
+    hintsUnlockTime: {
       type: Date,
+      required: true,
     },
   },
   { timestamps: true }
